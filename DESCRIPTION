@@ -27,3 +27,5 @@ Imports:
     xkcdcolors,
     RColorBrewer,
     scales
+URL: https://github.com/eric-hunt/RTtools
+BugReports: https://github.com/eric-hunt/RTtools/issues
