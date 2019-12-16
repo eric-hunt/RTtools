@@ -30,7 +30,7 @@ fit_model <- function(data, control = NULL, clean = TRUE) {
     tidyr::nest(spectra = -well) %>%
     dplyr::mutate(model = purrr::map(spectra, my_model)) %>%
     dplyr::mutate(
-      rate = purrr::map_dbl(
+      act_rate = purrr::map_dbl(
         model,
         ~ .x %>%
           broom::tidy() %>%
@@ -39,14 +39,14 @@ fit_model <- function(data, control = NULL, clean = TRUE) {
           round(digits = 0)
       )
     ) %>%
-    dplyr::mutate(endpoint = purrr::map_dbl(
+    dplyr::mutate(act_endpoint = purrr::map_dbl(
       spectra,
       ~ round((max(.x$intensity) - max(data[data$well == control, "intensity"][[1]])) /
                 (max(data$intensity) - max(data[data$well == control, "intensity"][[1]])), digits = 3)
     ))
 
   if (clean) {
-    return(nestedData %>% dplyr::select(well, rate, endpoint))
+    return(nestedData %>% dplyr::select(well, act_rate, act_endpoint))
   } else {return(nestedData)}
 }
 
@@ -94,7 +94,7 @@ view_model <- function(data, control = NULL, color = well, size = NULL, shape = 
   }
 
   p <- data %>%
-    ggplot2::ggplot(ggplot2::aes(x = rate, y = endpoint, text = well)) +
+    ggplot2::ggplot(ggplot2::aes(x = act_rate, y = act_endpoint, text = well)) +
     ggplot2::geom_point(
       data = data %>%
         dplyr::filter(!(well %in% c(control))),
